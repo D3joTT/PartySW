@@ -1,0 +1,5 @@
+name: PartySW
+version: ${project.version}
+main: net.d3jott.partysw.PartySW
+depend: [Spigot-Party-API-PAF]
+authors: [D3joTT]
