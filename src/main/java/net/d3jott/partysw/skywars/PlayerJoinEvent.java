@@ -3,7 +3,8 @@ package net.d3jott.partysw.skywars;
 import io.github.Leonardo0013YT.UltraSkyWars.UltraSkyWars;
 import io.github.Leonardo0013YT.UltraSkyWars.api.UltraSkyWarsAPI;
 import io.github.Leonardo0013YT.UltraSkyWars.api.events.PlayerGameJoinEvent;
-import io.github.Leonardo0013YT.UltraSkyWars.enums.GameType;
+import io.github.Leonardo0013YT.UltraSkyWars.managers.GameManager;
+import io.github.Leonardo0013YT.UltraSkyWars.menus.GameMenu;
 import net.d3jott.partysw.party.PartyAndFriends;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,14 +26,16 @@ public class PlayerJoinEvent implements Listener {
 
                 if (paf.partySize(pl) + e.getGame().getPlayers().size() <= e.getGame().getMax()) {
 
+                    GameManager gameManager = UltraSkyWars.get().getGm();
+
                     for (String name : paf.getMembers(pl)) {
 
                         Player player = Bukkit.getPlayer(name);
 
                         if ((UltraSkyWarsAPI.isPlayerGame(player)) || UltraSkyWarsAPI.isSpectator(player))
-                            UltraSkyWars.get().getGm().removePlayerAllGame(player);
+                            gameManager.removePlayerAllGame(player);
 
-                        UltraSkyWars.get().getGm().addPlayerGame(player, e.getGame().getId());
+                        gameManager.addPlayerGame(player, e.getGame().getId());
                     }
                 }
 
@@ -40,16 +43,21 @@ public class PlayerJoinEvent implements Listener {
 
                     e.setCancelled(true);
 
-                    GameType arenaType = e.getGame().getGameType();
+                    String arenaType = e.getGame().getGameType().toString();
 
-                    if (arenaType.toString().equals("SOLO"))
-                        UltraSkyWars.get().getGem().createGameNormalMenu(pl, "ignore");
+                    GameMenu gameMenu = UltraSkyWars.get().getGem();
 
-                    if (arenaType.toString().equals("TEAM"))
-                        UltraSkyWars.get().getGem().createGameTeamMenu(pl, "ignore");
-
-                    if (arenaType.toString().equals("RANKED"))
-                        UltraSkyWars.get().getGem().createGameRankedMenu(pl, "ignore");
+                    switch (arenaType) {
+                        case "SOLO":
+                            gameMenu.createGameNormalMenu(pl, "ignore");
+                            break;
+                        case "TEAM":
+                            gameMenu.createGameTeamMenu(pl, "ignore");
+                            break;
+                        case "RANKED":
+                            gameMenu.createGameRankedMenu(pl, "ignore");
+                            break;
+                    }
                 }
             }
         }
